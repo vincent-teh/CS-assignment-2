@@ -1,0 +1,138 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{amsmath, amsthm, amssymb}
+
+\usepackage{csquotes}
+\usepackage{subcaption}
+\usepackage{appendix}
+\usepackage{listings}
+\usepackage{lmodern}
+\usepackage{color}
+\usepackage{cancel}
+\usepackage{float}
+\usepackage{booktabs}
+
+
+\lstdefinestyle{lfonts}{
+  basicstyle   = \footnotesize\ttfamily,
+  stringstyle  = \color{purple},
+  keywordstyle = \color{magenta}\bfseries,
+  numberstyle   =  \tiny\color{gray}
+  commentstyle = \color{green}\scshape,
+}
+\lstdefinestyle{lnumbers}{
+  numbers     = left,
+  numberstyle = \tiny,
+  numbersep   = 1em,
+  firstnumber = 1,
+  stepnumber  = 1,
+}
+\lstdefinestyle{llayout}{
+  breaklines       = true,
+  tabsize          = 2,
+  columns          = flexible,
+}
+\lstdefinestyle{lgeometry}{
+  xleftmargin      = 20pt,
+  xrightmargin     = 0pt,
+  frame            = tb,
+  framesep         = \fboxsep,
+  framexleftmargin = 20pt,
+}
+\lstdefinestyle{lgeneral}{
+  style = lfonts,
+  style = lnumbers,
+  style = llayout,
+  style = lgeometry,
+}
+\lstdefinestyle{c}{
+    language = {c},
+    style    = lgeneral,
+}
+
+
+
+\newcommand{\todo}[1]{{\color{blue}#1}}  % show to-do items in blue
+\setlength{\parskip}{\baselineskip}
+\usepackage[activate={true,nocompatibility},
+            final,
+            tracking=true,
+            kerning=true,
+            factor=1100,
+            stretch=10,
+            shrink=10]{microtype}
+\hypersetup{
+    pdftitle={assignment 1},
+    % pdfpagemode=fullscreen,
+}
+
+\usepackage[a4paper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\newcounter{questionnum} \setcounter{questionnum}{0}
+
+\setlength{\parindent}{0pt}
+
+\def\email#1{{\tt#1}}
+
+\lstset{ % set the default style for code listings
+	numbers=left,
+	numberstyle=\scriptsize,
+	numbersep=8pt,
+	basicstyle=\scriptsize\ttfamily,
+	keywordstyle=\color{blue},
+	stringstyle=\color{red},
+	commentstyle=\color{green!70!black},
+	breaklines=true,
+	frame=single,
+	language=c,
+	tabsize=4,
+	showstringspaces=false
+}
+
+
+\begin{document}
+\begin{titlepage}
+  \begin{center}
+    \includegraphics[width=0.6\textwidth]{figure/UU_logo.eps}
+  \end{center}
+  \vspace{3em}
+  \begin{center}
+    \Large Computational Science, Bridging Course
+  \end{center}
+  \vspace{5em}
+  \begin{center}
+    \Large Assignment 2
+  \end{center}
+  \vspace{10em}
+  \begin{center}
+    Teh Yu Sheng \\[0.5em]
+    \today
+  \end{center}
+\end{titlepage}
+
+
+\section{Workout 1}%
+\label{sec:Workout 1}
+\subsection{Pendulum simulation in Python}%
+\label{sub:Pendulum simulation in Python}
+The given equations about the connected pendulums are a 2nd-order equation. Hence, the equations need to be converted to first order before solving using Python. 
+
+\begin{align}
+  \theta_1 &= a_1    \\
+  \theta_1' &= a_1' = b_1 \\
+  \theta_2 &= a_2  \label{eqn:q1:ode1} \\
+  \theta_2' &= a_2' = b_2 \label{eqn:q1:ode2} \\
+  \theta_1'' = b_1' &= -(\sin(a_1) + \alpha(a_1 - a_2)) \label{eqn:q1:ode3} \\
+  \theta_2'' = b_2' &= -\sin(a_2) + \alpha(a_1 - a_2) \label{eqn:q1:ode4}
+\end{align}
+Equation \ref{eqn:q1:ode1}, \ref{eqn:q1:ode2}, \ref{eqn:q1:ode3}, \ref{eqn:q1:ode4} represent the systems of ODE present in the two pendulum problem. Using the ODE systems and calculate using Python,
+
+
+
+
+\end{document}
+
