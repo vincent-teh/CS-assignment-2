@@ -1,3 +1,5 @@
 Homework2-1.pdf
-venv/
 report/build
+report/figures
+q1/__pycache__
+venv/
