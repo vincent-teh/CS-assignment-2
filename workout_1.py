@@ -18,7 +18,7 @@ def solve_my_ivp(t_final):
                          b2=0)
 
     return scipy.integrate.solve_ivp(
-        q1.ode, t_span=[0, t_final], y0=initial.to_array(), method="RK45")
+        q1.ode, t_span=[0, t_final], y0=initial.to_array(), method="RK45", t_eval=np.linspace(0, t_final, 1000))
 
 
 def main() -> None:

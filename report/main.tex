@@ -184,5 +184,138 @@ std dev of A2(T) & 0.0194         \\
 \end{tabular}
 \end{table}
 
+
+\section{Workout 2}%
+\label{sec:Workout 2}
+\subsection{1D FEM with the Linear Diffusion Equation.}%
+\label{sub:1D FEM with the Linear Diffusion Equation.}
+Given the following equation:
+\begin{equation}
+  \frac{\partial}{\partial t} u(x,t) = \frac{\partial}{\partial x} \left( a(x) \frac{\partial u(x,t)}{\partial x} \right), \quad a \leq x \leq b, \quad 0 < t \leq t_{final} \label{eqn:w2:original eqn}
+\end{equation}
+First, apply the weak form to equation \ref{eqn:w2:original eqn}:
+\begin{align}
+  \int_{\Omega} \frac{\partial}{\partial t} u(x,t) \, v \, dx = \int_{\Omega} \frac{\partial}{\partial x} \left( a(x) \frac{\partial u(x,t)}{\partial x} \right) v \, dx \\
+  \int_{\Omega} \frac{\partial}{\partial t} u(x,t) \, v \, dx = - \int_{\Omega}  a(x) \frac{\partial u(x,t)}{\partial x} \frac{\partial v}{\partial x} \, dx
+\end{align}
+where $\Omega$ is the boundary of interest of the integral from $a$ to $b$, $v(x)$ is the test function.
+\begin{align}
+  \text{let } u = & \sum_j u_j (t) \phi(x) ,\ v(x) = \phi(x) \\
+  \int_{\Omega} \frac{\partial}{\partial t} \left( \sum_{i} u_{i}(t) \phi_{i}(x) \right) dx &= -\int_{\Omega} a(x) \frac{\partial}{\partial x} \left( \sum_{j} u_{j}(t) \phi_{j}(x) \right) \frac{\partial \phi(x)}{\partial x} \, dx \\
+  \sum_j \frac{\partial u_j(t)}{\partial t} \int_{\Omega} \phi_j(x) \phi_i(x) \, dx &= - \sum_j u_j(t) \int_{\Omega} a(x) \frac{\partial}{\partial x} \phi_j(x) \frac{\partial}{\partial x} \phi_i(x) \, dx \\
+  \text{let } M = \int_{\Omega} \phi_j(x) \phi_i(x)& \, dx ,\ S = \int_{\Omega} a(x) \frac{\partial}{\partial x} \phi_j(x) \frac{\partial}{\partial x} \phi_i(x) \, dx \\
+  M \frac{d {u(t)}}{d {t}} &= S u(t), \, 0 < t \le t_{\text{final}} \label{eqn:w2:derived 1}
+\end{align}
+Hence, proved.
+
+$u(t)$ is the coefficient function with respect to time that describes the height of each point of the mesh at time t. Since the number of mesh is describe by $h$, the distance between each point will be $h = \frac{a - b}{N}$ and the span of the mesh is $\{a, a+h, a+2h, a+3h, \dots b\}$.
+
+\begin{align}
+  u(0) &= f(x) \\
+      &= \begin{bmatrix}
+        u_1(0) \\ u_2(0) \\ \vdots
+      \end{bmatrix} \\
+      &= \begin{bmatrix}
+        f(a) \\ f(a+h) \\ f(a+2h) \\ \vdots \\ f(b)
+      \end{bmatrix}
+\end{align}
+In other words, $u_i = f(a + ih)$.
+
+
+
+
+\subsection{Proved of M is a +ve definite matrix}%
+\label{sub:Proved of M is a +ve definite matrix}
+
+
+\subsection{Solving using the std ODE solver}%
+\label{sub:Solving using the std ODE solver}
+To derive a system of ODE from equation \ref{eqn:w2:derived 1}:
+\begin{align}
+  \text{Let } b(0) &= S u(0) \\
+                &= \begin{bmatrix}
+                  \alpha & \beta & & & &       \\
+                  \beta & \alpha & \beta & &   \\
+                   & \beta & \alpha & \beta &  \\
+                   & & \ddots & \ddots & \ddots \\
+                   & & & & \beta & \alpha \\
+                \end{bmatrix}
+                \begin{bmatrix}
+                  f(a) \\ f(a+h) \\ f(a+2h) \\ \vdots \\ f(b)
+                \end{bmatrix} \\
+                &= \begin{bmatrix}
+                  \alpha f(a) + \beta f(a + h) \\
+                  \beta f(a) + \alpha f(a+h) + \beta f(a+2h) \\
+                  \beta f(a+h) + \alpha f(a+2h) + \beta f(a+3h) \\
+                  \vdots \\
+                  \beta f(a+(N-2)h) + \alpha f(a + b) \\
+                \end{bmatrix} \\
+              b(0) &= \begin{bmatrix}
+                  b_0 \\ b_1 \\ b_2\\ \vdots \\ b_n
+                \end{bmatrix}
+\end{align}
+Further, since $M$ is a tridiagonal matrix, LU decomposition can be used to solve the system of linear equation.
+\begin{align}
+  \text{Let } M &= \begin{bmatrix}
+    a & b \\
+    b & 2a & b \\
+     & b & 2a & b \\
+     & & \ddots & \ddots & \ddots \\
+     & & & b & 2a \\
+  \end{bmatrix} \\
+    LU &= \begin{bmatrix}
+      a \\
+      b & a \\
+        & b & a \\
+        & & \ddots & \ddots \\
+        & & & b & a
+    \end{bmatrix}
+    \begin{bmatrix}
+      a & b\\
+        & a & b \\
+        & & a & b \\
+        & & & \ddots & \ddots \\
+        & & & & a
+    \end{bmatrix}
+\end{align}
+Then
+\begin{align}
+  LU \frac{\partial u(t)}{\partial t} &= b(t) 
+\end{align}
+Solve for $Lc = b$ which will derive a set of equation in terms of $c$, then solve for $Ux = c$ which gives another set of linear equation. Hence, a set of linear ODE system is now obtained.
+
+Then, applies the given set of equation into implicit Euler's formula:
+\begin{align}
+  y_{k+1} &= y_k + hf(t_k, y_k) \\
+  u(t_{k+1}) &= u(t_k) + h \frac{\partial u(t_k)}{\partial t} 
+\end{align}
+
+Implicit Euler Formula:
+\begin{align}
+  u(t_{k+1}) &= u(t_k) + h \frac{\partial u(t_{k+1})}{\partial t} \\
+             &= u(t_k) + h M^{-1} b(t_{k+1}) \\
+  M u(t_{k+1}) &= M u(t_k) + hb(t_{k+1}) \\
+  M u(t_{k+1}) &= M u(t_k) + h S u(t_{k+1}) \\
+  (M - h S) u(t_{k+1}) &= M u(t_k) \label{eqn:w2:derive-implicit-euler}
+\end{align}
+Solve equation \ref{eqn:w2:derive-implicit-euler} to obtain the updated $u(t_{k+1})$ at each time steps.
+
+Trapezoidal method:
+\begin{align}
+  u(t_{k+1}) &= u(t) + \frac{h}{2} \left(u'(t) + u'(t_{k+1}) \right) \\
+             &= u(t) + \frac{h}{2} \left( M^{-1} S u(t) + M^{-1} S u(t_{k+1}) \right) \\
+  M u(t_{k+1}) &= M u(t_k) + \frac{h}{2} S u(t) + \frac{h}{2} S u(t_{k+1}) \\
+  \left(M - \frac{h}{2}S \right) u(t_{k+1}) &= \left( M + \frac{h}{2}S \right) u(t) \label{eqn:w2:derived-trapezoidal-method}
+\end{align}
+Similar to the Implicit Euler Method, the Trapezoidal Method also produce a set of linear equation that can be solved using standard linear system solver.
+
+In Python, use \texttt{numpy.linalg.solve} to create a system of linear equation solver with respect to $\frac{\partial u(t)}{\partial t}$. The build-in Numpy linear system solver will implement the LU decomposition. Then, apply the system of equation into \texttt{scipy.integrate.solve\_ivp}.
+
+
+\subsection{Stability Analysis of the ODE methods on the FEM of the Heat Equation.}%
+\label{sub:Stability Analysis of the ODE methods on the FEM of the Heat Equation.}
+
+
+
 \end{document}
 
