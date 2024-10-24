@@ -109,7 +109,7 @@
   \end{center}
   \vspace{10em}
   \begin{center}
-    Teh Yu Sheng \\[0.5em]
+    Yu Sheng Teh\\[0.5em]
     \today
   \end{center}
 \end{titlepage}
@@ -153,6 +153,7 @@ Equation \ref{eqn:q1:ode1}, \ref{eqn:q1:ode2}, \ref{eqn:q1:ode3}, \ref{eqn:q1:od
 \label{fig:q1-pend-sim-3}
 \end{figure}
 
+Figure \ref{fig:q1-pend-sim-1}, \ref{fig:q1-pend-sim-2}, and \ref{fig:q1-pend-sim-3} shows the oscillation of the pendulum A and B across 10 seconds with the initial condition given.
 
 \begin{figure}[H]
   \centering
@@ -167,11 +168,13 @@ Equation \ref{eqn:q1:ode1}, \ref{eqn:q1:ode2}, \ref{eqn:q1:ode3}, \ref{eqn:q1:od
   \caption{Historgram of the position of Pendulum B at time T.}
   \label{fig:figures-Pendulum-B-eps}
 \end{figure}
+Figure \ref{fig:figures-Pendulum-A-eps} and \ref{fig:figures-Pendulum-B-eps} shows the histogram of the final position of the both pendulums. The distribution of the position of the pendulums follows the central limit theorem and form the normal distribution to which the mean and standard deviation of the positions can be calculated. 
 
 
 \begin{table}[H]
 \centering
 \caption{Statistical Data of A1(T) and A2(T)}
+\label{tab:statistical data a1 a2}
 \begin{tabular}{|l|r|}
 \hline
 \textbf{}       & \textbf{Value} \\
@@ -183,6 +186,11 @@ std dev of A2(T) & 0.0194         \\
 \hline
 \end{tabular}
 \end{table}
+Table \ref{tab:statistical data a1 a2} shows the statistical data of the position of A1 and A2 at time $T=10$. The mean here represents the expectation of A1 and A2 at time T.
+
+The probability of $0 \le A1(T),\ A2(T) < \pi \approx 0$. 
+
+The probability of $-\pi/4 \le A1(T),\ A2(T) < 0 \approx 76.98\%,\ 75.46\%$ respectively. 
 
 
 \section{Workout 2}%
@@ -230,65 +238,68 @@ In other words, $u_i = f(a + ih)$.
 
 \subsection{Solving using the std ODE solver}%
 \label{sub:Solving using the std ODE solver}
-To derive a system of ODE from equation \ref{eqn:w2:derived 1}:
-\begin{align}
-  \text{Let } b(0) &= S u(0) \\
-                &= \begin{bmatrix}
-                  \alpha & \beta & & & &       \\
-                  \beta & \alpha & \beta & &   \\
-                   & \beta & \alpha & \beta &  \\
-                   & & \ddots & \ddots & \ddots \\
-                   & & & & \beta & \alpha \\
-                \end{bmatrix}
-                \begin{bmatrix}
-                  f(a) \\ f(a+h) \\ f(a+2h) \\ \vdots \\ f(b)
-                \end{bmatrix} \\
-                &= \begin{bmatrix}
-                  \alpha f(a) + \beta f(a + h) \\
-                  \beta f(a) + \alpha f(a+h) + \beta f(a+2h) \\
-                  \beta f(a+h) + \alpha f(a+2h) + \beta f(a+3h) \\
-                  \vdots \\
-                  \beta f(a+(N-2)h) + \alpha f(a + b) \\
-                \end{bmatrix} \\
-              b(0) &= \begin{bmatrix}
-                  b_0 \\ b_1 \\ b_2\\ \vdots \\ b_n
-                \end{bmatrix}
-\end{align}
-Further, since $M$ is a tridiagonal matrix, LU decomposition can be used to solve the system of linear equation.
-\begin{align}
-  \text{Let } M &= \begin{bmatrix}
-    a & b \\
-    b & 2a & b \\
-     & b & 2a & b \\
-     & & \ddots & \ddots & \ddots \\
-     & & & b & 2a & b \\
-     & & & &b & 2a \\
-  \end{bmatrix} \\
-    LU &= \begin{bmatrix}
-      a \\
-      b & a \\
-        & b & a \\
-        & & \ddots & \ddots \\
-        & & & b & a
-    \end{bmatrix}
-    \begin{bmatrix}
-      a & b\\
-        & a & b \\
-        & & a & b \\
-        & & & \ddots & \ddots \\
-        & & & & a
-    \end{bmatrix}
-\end{align}
-Then
-\begin{align}
-  LU \frac{\partial u(t)}{\partial t} &= b(t) 
-\end{align}
-Solve for $Lc = b$ which will derive a set of equation in terms of $c$, then solve for $Ux = c$ which gives another set of linear equation. Hence, a set of linear ODE system is now obtained.
-
-Then, applies the given set of equation into implicit Euler's formula:
+% To derive a system of ODE from equation \ref{eqn:w2:derived 1}:
+% \begin{align}
+%   \text{Let } b(0) &= S u(0) \\
+%                 &= \begin{bmatrix}
+%                   \alpha & \beta & & & &       \\
+%                   \beta & \alpha & \beta & &   \\
+%                    & \beta & \alpha & \beta &  \\
+%                    & & \ddots & \ddots & \ddots \\
+%                    & & & & \beta & \alpha \\
+%                 \end{bmatrix}
+%                 \begin{bmatrix}
+%                   f(a) \\ f(a+h) \\ f(a+2h) \\ \vdots \\ f(b)
+%                 \end{bmatrix} \\
+%                 &= \begin{bmatrix}
+%                   \alpha f(a) + \beta f(a + h) \\
+%                   \beta f(a) + \alpha f(a+h) + \beta f(a+2h) \\
+%                   \beta f(a+h) + \alpha f(a+2h) + \beta f(a+3h) \\
+%                   \vdots \\
+%                   \beta f(a+(N-2)h) + \alpha f(a + b) \\
+%                 \end{bmatrix} \\
+%               b(0) &= \begin{bmatrix}
+%                   b_0 \\ b_1 \\ b_2\\ \vdots \\ b_n
+%                 \end{bmatrix}
+% \end{align}
+% Further, since $M$ is a tridiagonal matrix, LU decomposition can be used to solve the system of linear equation.
+% \begin{align}
+%   \text{Let } M &= \begin{bmatrix}
+%     a & b \\
+%     b & 2a & b \\
+%      & b & 2a & b \\
+%      & & \ddots & \ddots & \ddots \\
+%      & & & b & 2a & b \\
+%      & & & &b & 2a \\
+%   \end{bmatrix} \\
+%     LU &= \begin{bmatrix}
+%       a \\
+%       b & a \\
+%         & b & a \\
+%         & & \ddots & \ddots \\
+%         & & & b & a
+%     \end{bmatrix}
+%     \begin{bmatrix}
+%       a & b\\
+%         & a & b \\
+%         & & a & b \\
+%         & & & \ddots & \ddots \\
+%         & & & & a
+%     \end{bmatrix}
+% \end{align}
+% Then
+% \begin{align}
+%   LU \frac{\partial u(t)}{\partial t} &= b(t) 
+% \end{align}
+% Solve for $Lc = b$ which will derive a set of equation in terms of $c$, then solve for $Ux = c$ which gives another set of linear equation. Hence, a set of linear ODE system is now obtained.
+%
+Explicit Euler's method:
 \begin{align}
   y_{k+1} &= y_k + hf(t_k, y_k) \\
-  u(t_{k+1}) &= u(t_k) + h \frac{\partial u(t_k)}{\partial t} 
+  u(t_{k+1}) &= u(t_k) + h \frac{\partial u(t_k)}{\partial t} \\
+  u(t_{k+1}) &= u(t_k) + h M^{-1} S u(t_k) \\
+  M u(t_{k+1}) &= M u(t_k) + h S u(t_k) \\
+  M u(t_{k+1}) &= (M + hS) u(t_k)
 \end{align}
 
 Implicit Euler Formula:
@@ -315,17 +326,33 @@ In Python, use \texttt{numpy.linalg.solve} to create a system of linear equation
 
 \subsection{Stability Analysis of the ODE methods on the FEM of the Heat Equation.}%
 \label{sub:Stability Analysis of the ODE methods on the FEM of the Heat Equation.}
+The Courant–Friedrichs–Lewy condition defines the heat equation is stable if:
+\begin{align}
+  \max |u(t_{k+1})| \le \max |u(t_k)|
+\end{align}
+To satisfy the CFL condition using Explicit Euler's method,
+\begin{align}
+  k \le \frac{h^2}{2}
+\end{align}
+Where k is the time step and h is the size of the interval of the mesh.
+
+Implicit method on the other hand has unconditional stability criteria, implying that any choice of h will result in stable system.
+
+
+
+
 
 
 
 \subsection{Implementation of the FEM in Python.}%
 \label{sub:Implementation of the FEM in Python.}
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{figures/W2-solution.eps}
   \caption{Comparison between the FEM solution and the exact solution.}
   \label{fig:w2:Comparison FEM vs Exact}
 \end{figure}
+Figure \ref{fig:w2:Comparison FEM vs Exact} shows the comparison between the FEM solution and the exact solution over time. Both solutions show similar result and trending. As time goes towards infinity, $u(t) = 0$. The observation aligns with the physical phenomenon of the heat equation. Without the addition of energy supply into the system, eventually the heat dissipated into the surrounding and reach 0.
 
 
 \begin{figure}[H]
@@ -335,13 +362,14 @@ In Python, use \texttt{numpy.linalg.solve} to create a system of linear equation
   \label{fig:figures-w2-mesh-error-eps}
 \end{figure}
 
+As the size of the mesh increases, the error decrease linearly in log scale. However, the error rate increases after 50 meshes. One possible reason is because the solution hits the computational limits of the computing device and hence, cannot produce higher accuracy result. One way to improve the result is to change the size of the data type of the $u(t)$ from 64-bits Numpy floating point to higher bits, e.g. 128 bits.
+
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/w2-time-step-error.eps}
   \caption{Time step error analysis.}
   \label{fig:figures-w2-time-step-error-eps}
 \end{figure}
-
 
 \end{document}
 

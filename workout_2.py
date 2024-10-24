@@ -1,8 +1,6 @@
-from math import log
-import os
-import numpy as np
 import matplotlib.pyplot as plt
-import scipy
+import numpy as np
+import os
 import scipy.integrate
 
 
@@ -59,7 +57,8 @@ class FEM:
     @staticmethod
     def MassMatAssembler(x: np.ndarray) -> np.ndarray:
         """
-        Determines the number of elements the mass matrix should have based on the size of X (N - 2). Generate the output tridiagonal matrix with base vector of [[2,1], [1,2]].
+        Determines the number of elements the mass matrix should have based on the size of X
+        (N - 2). Generate the output tridiagonal matrix with base vector of [[2,1], [1,2]].
 
         Args:
             x (Arraylike): size of the ut
@@ -81,7 +80,8 @@ class FEM:
     @staticmethod
     def StiffMatAssembler(x: np.ndarray) -> np.ndarray:
         """
-        Generate the stiffness matrix of size nxn where n is the size of the FEM mesh, N-2 assuming Drichlet condition. Also correspond to the phi'phi' matrix.
+        Generate the stiffness matrix of size nxn where n is the size of the FEM mesh, N-2
+        assuming Drichlet condition. Also correspond to the phi'phi' matrix.
 
         Args:
             x (np.ndarray): input x coordinate.
@@ -111,7 +111,7 @@ class FEM:
 
 def main() -> None:
     x_start, x_end = 0, np.pi
-    mesh_size = 50
+    mesh_size = 5
     x = np.linspace(x_start, x_end, mesh_size)
     fem = FEM(x)
     t_steps = 10
@@ -144,9 +144,11 @@ def main() -> None:
     ax2.set_ylim(0, None)
 
     plt.tight_layout()
+    plt.savefig(os.path.join(PATH, "W2-solution.eps"), format="eps")
     plt.show()
 
-    exact_sol_norm = scipy.integrate.trapezoid(exact_fn(t_final, x) ** 2, x)
+    exact_fn_prime = lambda t, x: np.exp(-t) * np.cos(x)
+    exact_sol_norm = scipy.integrate.trapezoid(exact_fn_prime(t_final, x) ** 2, x)
     print(f"Exact solution norm: {exact_sol_norm: .4f}")
 
     print(f"===============Error Analysis with Varying h===============")
@@ -156,7 +158,6 @@ def main() -> None:
         x = np.linspace(x_start, x_end, mesh_size)
         fem = FEM(x)
         sol = fem.solve(mesh_size=mesh_size, t_steps=10)
-        # print(f"FEM norm: {fem.sol_norm: .4f} ")
         errors.append(abs(exact_sol_norm - fem.sol_norm))
         print(f"Error: {errors[-1]:.4f}")
 
