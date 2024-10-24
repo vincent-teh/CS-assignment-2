@@ -203,7 +203,7 @@ where $\Omega$ is the boundary of interest of the integral from $a$ to $b$, $v(x
   \text{let } u = & \sum_j u_j (t) \phi(x) ,\ v(x) = \phi(x) \\
   \int_{\Omega} \frac{\partial}{\partial t} \left( \sum_{i} u_{i}(t) \phi_{i}(x) \right) dx &= -\int_{\Omega} a(x) \frac{\partial}{\partial x} \left( \sum_{j} u_{j}(t) \phi_{j}(x) \right) \frac{\partial \phi(x)}{\partial x} \, dx \\
   \sum_j \frac{\partial u_j(t)}{\partial t} \int_{\Omega} \phi_j(x) \phi_i(x) \, dx &= - \sum_j u_j(t) \int_{\Omega} a(x) \frac{\partial}{\partial x} \phi_j(x) \frac{\partial}{\partial x} \phi_i(x) \, dx \\
-  \text{let } M = \int_{\Omega} \phi_j(x) \phi_i(x)& \, dx ,\ S = \int_{\Omega} a(x) \frac{\partial}{\partial x} \phi_j(x) \frac{\partial}{\partial x} \phi_i(x) \, dx \\
+  \text{let } M = \int_{\Omega} \phi_j(x) \phi_i(x)& \, dx ,\ S = -\int_{\Omega} a(x) \frac{\partial}{\partial x} \phi_j(x) \frac{\partial}{\partial x} \phi_i(x) \, dx \\
   M \frac{d {u(t)}}{d {t}} &= S u(t), \, 0 < t \le t_{\text{final}} \label{eqn:w2:derived 1}
 \end{align}
 Hence, proved.
@@ -261,7 +261,8 @@ Further, since $M$ is a tridiagonal matrix, LU decomposition can be used to solv
     b & 2a & b \\
      & b & 2a & b \\
      & & \ddots & \ddots & \ddots \\
-     & & & b & 2a \\
+     & & & b & 2a & b \\
+     & & & &b & 2a \\
   \end{bmatrix} \\
     LU &= \begin{bmatrix}
       a \\
@@ -315,6 +316,31 @@ In Python, use \texttt{numpy.linalg.solve} to create a system of linear equation
 \subsection{Stability Analysis of the ODE methods on the FEM of the Heat Equation.}%
 \label{sub:Stability Analysis of the ODE methods on the FEM of the Heat Equation.}
 
+
+
+\subsection{Implementation of the FEM in Python.}%
+\label{sub:Implementation of the FEM in Python.}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{figures/W2-solution.eps}
+  \caption{Comparison between the FEM solution and the exact solution.}
+  \label{fig:w2:Comparison FEM vs Exact}
+\end{figure}
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figures/w2-mesh-error.eps}
+  \caption{Mesh error analysis.}
+  \label{fig:figures-w2-mesh-error-eps}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figures/w2-time-step-error.eps}
+  \caption{Time step error analysis.}
+  \label{fig:figures-w2-time-step-error-eps}
+\end{figure}
 
 
 \end{document}
