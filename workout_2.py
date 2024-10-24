@@ -28,13 +28,13 @@ class FEM:
         t_steps=10,
         method: str | None = None,
     ):
-        if isinstance(mesh_size, int) and mesh_size < 3:
+        if not isinstance(mesh_size, int) or mesh_size < 3:
             raise ValueError("Mesh size must be larger than 3.")
         if t_start < 0:
             raise ValueError("t_start must be positive.")
         if t_final < t_start:
             raise ValueError("t_final must be larger than t_start.")
-        if isinstance(t_steps, int) and t_steps < 0:
+        if not isinstance(t_steps, int) or t_steps < 0:
             raise ValueError("t_steps must be an positive integer.")
         if method is None:
             method = "BDF"
