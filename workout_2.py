@@ -1,183 +1,111 @@
+from logging import warning
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 import scipy.integrate
 
+from myFEM import FEM, ExplicitEuler, ImplicitEuler, TrapezoidalEuler
+
 
 PATH = os.path.join("report", "figures")
 
 
-class FEM:
-    def __init__(self, x: np.ndarray) -> None:
-        self.x = x
-        self.S = self.StiffMatAssembler(x)
-        self.M = self.MassMatAssembler(x)
-        self.x_start = x[0]
-        self.x_end = x[-1]
-
-    def update(self, t, ut) -> np.ndarray:
-        return np.linalg.solve(self.M, -self.S @ ut)
-
-    def solve(
-        self,
-        mesh_size: int,
-        t_start=0,
-        t_final=1,
-        t_steps=10,
-        method: str | None = None,
-    ):
-        if not isinstance(mesh_size, int) or mesh_size < 3:
-            raise ValueError("Mesh size must be larger than 3.")
-        if t_start < 0:
-            raise ValueError("t_start must be positive.")
-        if t_final < t_start:
-            raise ValueError("t_final must be larger than t_start.")
-        if not isinstance(t_steps, int) or t_steps < 0:
-            raise ValueError("t_steps must be an positive integer.")
-        if method is None:
-            method = "BDF"
-
-        x = np.linspace(self.x_start, self.x_end, mesh_size)
-        u0 = np.sin(x)
-        self.sol = scipy.integrate.solve_ivp(
-            self.update,
-            t_span=[0, 1],
-            y0=u0[1:-1],
-            t_eval=np.linspace(t_start, t_final, t_steps),
-            method=method,
-        )
-        return self.sol
-
-    @property
-    def sol_norm(self):
-        if self.sol is None:
-            return 0
-        return self.sol.y[:, -1].T @ self.S @ self.sol.y[:, -1]
-
-    @staticmethod
-    def MassMatAssembler(x: np.ndarray) -> np.ndarray:
-        """
-        Determines the number of elements the mass matrix should have based on the size of X
-        (N - 2). Generate the output tridiagonal matrix with base vector of [[2,1], [1,2]].
-
-        Args:
-            x (Arraylike): size of the ut
-
-        Returns:
-            np.ndarray: nxn matrix
-        """
-        num_elements = np.size(x) - 1
-        element_length = x[1] - x[0]
-        num_nodes = num_elements - 1
-
-        # Initialize the mass matrix
-        M = np.zeros((num_nodes, num_nodes))
-        element_mass_matrix = (element_length / 6) * np.array([[2, 1], [1, 2]])
-        for i in range(num_nodes - 1):
-            M[i : i + 2, i : i + 2] += element_mass_matrix
-        return M
-
-    @staticmethod
-    def StiffMatAssembler(x: np.ndarray) -> np.ndarray:
-        """
-        Generate the stiffness matrix of size nxn where n is the size of the FEM mesh, N-2
-        assuming Drichlet condition. Also correspond to the phi'phi' matrix.
-
-        Args:
-            x (np.ndarray): input x coordinate.
-
-        Returns:
-            np.ndarray: nxn stiffness matrix.
-        """
-        N = np.size(x) - 1  # number of elements
-        n = N - 1
-        # dimension V_h^0 = size(x)-2
-        S = np.zeros([n, n])  # initialize stiffnes matrix to zero
-        for i in range(0, n - 1):  # loop over elements
-            h = x[i + 1] - x[i]  # element length
-            # assemble element stiffness
-            S[i : i + 2, i : i + 2] = (
-                S[i : i + 2, i : i + 2] + np.array([[1, -1], [-1, 1]]) / h
-            )
-
-        h1 = x[1] - x[0]
-        h2 = x[2] - x[1]
-        hn = x[n] - x[n - 1]
-        hn1 = x[n + 1] - x[n]
-        S[0, 0] = 1 / h1 + 1 / h2  # adjust for left BC
-        S[n - 1, n - 1] = 1 / hn + 1 / hn1  # adjust for right BC
-        return S
-
-
-def main() -> None:
+def plot_sol_over_time(FEM_: object, fig_name: str | None = None):
     x_start, x_end = 0, np.pi
-    mesh_size = 5
+    mesh_size = 7
     x = np.linspace(x_start, x_end, mesh_size)
-    fem = FEM(x)
-    t_steps = 10
+    t_steps = 100
     t_start = 0
     t_final = 1
 
     exact_fn = lambda t, x: np.exp(-t) * np.sin(x)
+    fem = FEM_(x)
 
-    sol = fem.solve(mesh_size=mesh_size)
+    sol = fem.solve(u0=np.sin(x)[1:-1], t_steps=t_steps)
 
     normalize_sol = np.zeros([mesh_size, t_steps])
-    normalize_sol[1:-1] = sol.y
+    normalize_sol[1:-1] = sol
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
 
-    for i in range(10):
+    T = np.linspace(t_start, t_final, t_steps)
+
+    plot_step = 5
+
+    for i, _ in enumerate(T):
+        if i % (t_steps // plot_step):
+            continue
         ax1.plot(x, normalize_sol[:, i])
-    ax1.legend(["Time: " + str(i) for i in range(10)])
+    ax1.plot(x, normalize_sol[:, -1])
+    ax1.legend(["Time: " + str(i) for i in range(plot_step)] + ["Final"])
     ax1.set_title("FEM Solution")
     ax1.set_xlabel("X")
     ax1.set_ylabel("u(t)")
     ax1.set_ylim(0, None)
 
-    for i in np.linspace(t_start, t_final, t_steps):
-        ax2.plot(x, exact_fn(i, x))
-    ax2.legend(["Time: " + str(i) for i in range(10)])
+    for i, t in enumerate(T):
+        if i % (t_steps // plot_step):
+            continue
+        ax2.plot(x, exact_fn(t, x))
+    ax2.plot(x, exact_fn(t_final, x))
+    ax2.legend(["Time: " + str(i) for i in range(plot_step)] + ["Final"])
     ax2.set_title("Exact Solution")
     ax2.set_xlabel("X")
     ax2.set_ylabel("u(t)")
     ax2.set_ylim(0, None)
 
     plt.tight_layout()
-    plt.savefig(os.path.join(PATH, "W2-solution.eps"), format="eps")
+    fig.suptitle(fig_name, fontsize=16)
+    if fig_name is not None:
+        plt.savefig(os.path.join(PATH, fig_name + ".eps"), format="eps")
     plt.show()
+
+
+def plot_error_analysis(FEM_: object, fig_name: str|None = None):
+    x_start = 0
+    x_end = np.pi
+    mesh_size = 7
+    t_steps = 5
+    t_final = 1
+
+    x = np.linspace(x_start, x_end, 1000)
 
     exact_fn_prime = lambda t, x: np.exp(-t) * np.cos(x)
     exact_sol_norm = scipy.integrate.trapezoid(exact_fn_prime(t_final, x) ** 2, x)
     print(f"Exact solution norm: {exact_sol_norm: .4f}")
 
-    print(f"===============Error Analysis with Varying h===============")
+    print(f"===============Error Analysis with Step Count {t_steps}===============")
     errors: list[float] = []
-    mesh_sizes = (5, 10, 20, 30, 50, 60, 100)
+    mesh_sizes = (4, 5, 7, 10, 15)
+    u0 = np.sin(x[1:-1])
     for mesh_size in mesh_sizes:
         x = np.linspace(x_start, x_end, mesh_size)
-        fem = FEM(x)
-        sol = fem.solve(mesh_size=mesh_size, t_steps=10)
-        errors.append(abs(exact_sol_norm - fem.sol_norm))
+        u0 = np.sin(x)
+        fem = FEM_(x)
+        sol = fem.solve(u0[1: -1], t_steps=t_steps)
+        errors.append((abs(exact_sol_norm - fem.sol_norm)))
         print(f"Error: {errors[-1]:.4f}")
 
+    mesh_sizes = 1 / np.array(mesh_sizes)
     plt.plot(mesh_sizes, errors)
     plt.xscale("log")
     plt.yscale("log")
-    plt.xlabel("Number of mesh in log scale.")
+    plt.xlabel("Size of the mesh in log scale.")
     plt.ylabel("Measured error in log scale.")
-    plt.title("Error vs Mesh Size Curve with k=10")
-    plt.savefig(os.path.join(PATH, "w2-mesh-error.eps"), format="eps")
+    plt.title(f"Error vs Mesh Size Curve with k={t_steps}")
+    if fig_name is not None:
+        plt.savefig(os.path.join(PATH, fig_name + "-mesh-error.eps"), format="eps")
     plt.show()
 
-    print(f"===============Error Analysis with Varying k===============")
-    t_steps = (10, 20, 30, 50, 100)
     mesh_size = 10
+    print(f"===============Error Analysis with Mesh Size {mesh_size}===============")
+    t_steps = (5, 10, 20, 30, 50, 100)
     errors: list[float] = []
     for t_step in t_steps:
         x = np.linspace(x_start, x_end, mesh_size)
-        fem = FEM(x)
-        sol = fem.solve(mesh_size, t_steps=t_step, method="Radau")
+        u0 = np.sin(x)
+        fem = FEM_(x)
+        sol = fem.solve(u0[1: -1], t_steps=t_step)
         errors.append(abs(exact_sol_norm - fem.sol_norm))
         print(f"Error: {errors[-1]:.4f}")
     plt.plot(t_steps, errors)
@@ -185,9 +113,20 @@ def main() -> None:
     plt.yscale("log")
     plt.xlabel("Number of steps in log scale.")
     plt.ylabel("Measured error in log scale.")
-    plt.title("Error vs Time Steps Curve with h=10")
-    plt.savefig(os.path.join(PATH, "w2-time-step-error.eps"), format="eps")
+    plt.title(f"Error vs Time Steps Curve with h={mesh_size}")
+    if fig_name is not None:
+        plt.savefig(os.path.join(PATH, fig_name + "-steps-error.eps"), format="eps")
     plt.show()
+
+
+def main() -> None:
+    # plot_sol_over_time(ExplicitEuler, "Explicit_Euler")
+    # plot_sol_over_time(ImplicitEuler, "Implicit_Euler")
+    # plot_sol_over_time(TrapezoidalEuler, "Trapezoidal")
+
+    # plot_error_analysis(ExplicitEuler, "Explicit_Euler")
+    # plot_error_analysis(ImplicitEuler, "Implicit_Euler")
+    plot_error_analysis(TrapezoidalEuler, "Trapezoidal")
 
 
 if __name__ == "__main__":

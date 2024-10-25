@@ -224,7 +224,7 @@ $u(t)$ is the coefficient function with respect to time that describes the heigh
         u_1(0) \\ u_2(0) \\ \vdots
       \end{bmatrix} \\
       &= \begin{bmatrix}
-        f(a) \\ f(a+h) \\ f(a+2h) \\ \vdots \\ f(b)
+        f(a+h) \\ f(a+2h) \\ \vdots \\ f(b-h)
       \end{bmatrix}
 \end{align}
 In other words, $u_i = f(a + ih)$.
@@ -348,28 +348,53 @@ Implicit method on the other hand has unconditional stability criteria, implying
 \label{sub:Implementation of the FEM in Python.}
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{figures/W2-solution.eps}
-  \caption{Comparison between the FEM solution and the exact solution.}
-  \label{fig:w2:Comparison FEM vs Exact}
+  \includegraphics[width=\textwidth]{figures/Explicit_Euler.eps}
+  \caption{FEM Solution using Explicit Euler method.}
+  \label{fig:figures-Explicit_Euler-eps}
 \end{figure}
-Figure \ref{fig:w2:Comparison FEM vs Exact} shows the comparison between the FEM solution and the exact solution over time. Both solutions show similar result and trending. As time goes towards infinity, $u(t) = 0$. The observation aligns with the physical phenomenon of the heat equation. Without the addition of energy supply into the system, eventually the heat dissipated into the surrounding and reach 0.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/Implicit_Euler.eps}
+  \caption{FEM Solution using Implicit Euler method.}
+  \label{fig:figures-Implicit_Euler-eps}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/Trapezoidal.eps}
+  \caption{FEM Solution using Trapezoidal method.}
+  \label{fig:figures-Trapezoidal-eps}
+\end{figure}
+
+Figure \ref{fig:figures-Explicit_Euler-eps}, \ref{fig:figures-Implicit_Euler-eps} and \ref{fig:figures-Trapezoidal-eps} shows the solution using the Explicit, Implicit and Trapezoidal method respectively with time step $k$ set to 0.1 and mesh size $h$ set to 7. All of the solution converge in this case with no significance performance overhead in the methods due to all methods have the same time complexity per updates and perform fixed size of update ($(t_F - t_0) / k$).
 
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.8\textwidth]{figures/w2-mesh-error.eps}
-  \caption{Mesh error analysis.}
-  \label{fig:figures-w2-mesh-error-eps}
+  \includegraphics[width=\textwidth]{figures/Explicit_Euler-steps-error.eps}
+  \caption{Step count error analysis with Explicit Euler method.}
+  \label{fig:figures-Explicit_Euler-steps-error-eps}
 \end{figure}
 
-As the size of the mesh increases, the error decrease linearly in log scale. However, the error rate increases after 50 meshes. One possible reason is because the solution hits the computational limits of the computing device and hence, cannot produce higher accuracy result. One way to improve the result is to change the size of the data type of the $u(t)$ from 64-bits Numpy floating point to higher bits, e.g. 128 bits.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.8\textwidth]{figures/w2-time-step-error.eps}
-  \caption{Time step error analysis.}
-  \label{fig:figures-w2-time-step-error-eps}
+  \includegraphics[width=\textwidth]{figures/Implicit_Euler-steps-error.eps}
+  \caption{Step count error analysis with Implicit Euler method.}
+  \label{fig:figures-Implicit_Euler-steps-error-eps}
 \end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/Trapezoidal-steps-error.eps}
+  \caption{Step count error analysis with Trapezoidal method.}
+  \label{fig:figures-Trapezoidal-steps-error-eps}
+\end{figure}
+
+Figure \ref{fig:figures-Explicit_Euler-steps-error-eps}, \ref{fig:figures-Implicit_Euler-steps-error-eps} and \ref{fig:figures-Trapezoidal-steps-error-eps} shows the effect of increasing the number of steps in the error of the solution measured in energy norm.
+
+
 
 \end{document}
 
