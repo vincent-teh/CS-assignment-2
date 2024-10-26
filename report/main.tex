@@ -170,7 +170,7 @@ Figure \ref{fig:q1-pend-sim-1}, \ref{fig:q1-pend-sim-2}, and \ref{fig:q1-pend-si
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/Pendulum-B.eps}
-  \caption{Historgram of the position of Pendulum B at time T.}
+  \caption{Histogram of the position of Pendulum B at time T.}
   \label{fig:figures-Pendulum-B-eps}
 \end{figure}
 Figure \ref{fig:figures-Pendulum-A-eps} and \ref{fig:figures-Pendulum-B-eps} shows the histogram of the final position of the both pendulums. The distribution of the position of the pendulums follows the central limit theorem and form the normal distribution to which the mean and standard deviation of the positions can be calculated. 
@@ -328,61 +328,6 @@ Since $c$ always positive as the element of the matrix M are all positive and th
 
 \subsection{Solving using the std ODE solver}%
 \label{sub:Solving using the std ODE solver}
-% To derive a system of ODE from equation \ref{eqn:w2:derived 1}:
-% \begin{align}
-%   \text{Let } b(0) &= S u(0) \\
-%                 &= \begin{bmatrix}
-%                   \alpha & \beta & & & &       \\
-%                   \beta & \alpha & \beta & &   \\
-%                    & \beta & \alpha & \beta &  \\
-%                    & & \ddots & \ddots & \ddots \\
-%                    & & & & \beta & \alpha \\
-%                 \end{bmatrix}
-%                 \begin{bmatrix}
-%                   f(a) \\ f(a+h) \\ f(a+2h) \\ \vdots \\ f(b)
-%                 \end{bmatrix} \\
-%                 &= \begin{bmatrix}
-%                   \alpha f(a) + \beta f(a + h) \\
-%                   \beta f(a) + \alpha f(a+h) + \beta f(a+2h) \\
-%                   \beta f(a+h) + \alpha f(a+2h) + \beta f(a+3h) \\
-%                   \vdots \\
-%                   \beta f(a+(N-2)h) + \alpha f(a + b) \\
-%                 \end{bmatrix} \\
-%               b(0) &= \begin{bmatrix}
-%                   b_0 \\ b_1 \\ b_2\\ \vdots \\ b_n
-%                 \end{bmatrix}
-% \end{align}
-% Further, since $M$ is a tridiagonal matrix, LU decomposition can be used to solve the system of linear equation.
-% \begin{align}
-%   \text{Let } M &= \begin{bmatrix}
-%     a & b \\
-%     b & 2a & b \\
-%      & b & 2a & b \\
-%      & & \ddots & \ddots & \ddots \\
-%      & & & b & 2a & b \\
-%      & & & &b & 2a \\
-%   \end{bmatrix} \\
-%     LU &= \begin{bmatrix}
-%       a \\
-%       b & a \\
-%         & b & a \\
-%         & & \ddots & \ddots \\
-%         & & & b & a
-%     \end{bmatrix}
-%     \begin{bmatrix}
-%       a & b\\
-%         & a & b \\
-%         & & a & b \\
-%         & & & \ddots & \ddots \\
-%         & & & & a
-%     \end{bmatrix}
-% \end{align}
-% Then
-% \begin{align}
-%   LU \frac{\partial u(t)}{\partial t} &= b(t) 
-% \end{align}
-% Solve for $Lc = b$ which will derive a set of equation in terms of $c$, then solve for $Ux = c$ which gives another set of linear equation. Hence, a set of linear ODE system is now obtained.
-%
 Explicit Euler's method:
 \begin{align}
   y_{k+1} &= y_k + hf(t_k, y_k) \\
@@ -411,7 +356,7 @@ Trapezoidal method:
 \end{align}
 Similar to the Implicit Euler Method, the Trapezoidal Method also produce a set of linear equation that can be solved using standard linear system solver.
 
-In Python, use \texttt{numpy.linalg.solve} to create a system of linear equation solver with respect to $\frac{\partial u(t)}{\partial t}$. The build-in Numpy linear system solver will implement the LU decomposition. Then, apply the system of equation into \texttt{scipy.integrate.solve\_ivp}.
+In Python, use \texttt{numpy.linalg.solve} to create a system of linear equation solver with respect to $\frac{\partial u(t)}{\partial t}$. The built-in Numpy linear system solver will implement the LU decomposition. Then, apply the system of equation into \texttt{scipy.integrate.solve\_ivp}.
 
 
 \subsection{Stability Analysis of the ODE methods on the FEM of the Heat Equation.}%
@@ -443,7 +388,11 @@ Implicit method on the other hand has unconditional stability criteria, implying
   \label{fig:figures-mesh-analysis-total-eps}
 \end{figure}
 
-Figure \ref{fig:figures-mesh-analysis-total-eps} shows as the mesh size increases, the accuracy of the Explicit Euler method improves while the Implicit Euler and Trapezoidal methods have no significant changes in their accuracy. This is because the Explicit Euler stability criteria is bounded by both the mesh size and the time step size. The larger the size of the mesh, the smaller the time step required. By increasing the size of the k to 20, figure \ref{fig:figures-mesh-analysis-total-eps} shows only the largest mesh reaches convergence despite the step size has doubled. This indicates the need of using large number of steps to achieve convergence, which can be computational expensive as the number of mesh and dimension increases.
+Figure \ref{fig:figures-mesh-analysis-total-eps} shows as the mesh size increases, the accuracy 
+of the Explicit Euler method improves while the Implicit Euler and Trapezoidal methods have no 
+significant changes in their accuracy. This is because the Explicit Euler stability criteria are
+bounded by both the mesh size and the time step size. The larger the size of the mesh, the smaller the time step required. By increasing the size of the k to 20, figure \ref{fig:figures-mesh-analysis-total-eps} shows only the largest mesh reaches convergence despite the step size has doubled. This indicates the need of using  the large number of steps to achieve convergence, which
+can be computational expensive as the number of mesh and dimension increases.
 
 \begin{figure}[H]
   \centering
@@ -459,7 +408,7 @@ Figure \ref{fig:figures-mesh-analysis-total-eps} shows as the mesh size increase
   \caption{Effect of changing the step size on the error across the 3 methods.}
   \label{fig:figures-step-analysis-total-eps}
 \end{figure}
-Figure \ref{fig:figures-step-analysis-total-eps} shows again only the Explicit Euler's method did not reach convergence at all of the choice of the step sizes. Also noticed that even the implicit methods did not show improvement in accuracy with the constant time steps despite increasing the number of steps taken.
+Figure \ref{fig:figures-step-analysis-total-eps} shows again only the Explicit Euler's method did not reach convergence at all the choice of the step sizes. Also noticed that even the implicit methods did not show improvement in accuracy with the constant time steps despite increasing the number of steps taken.
 
 \begin{figure}[H]
   \centering
