@@ -183,26 +183,26 @@ def main() -> None:
         "Implicit_Euler": ImplicitEuler,
         "Trapezoidal": TrapezoidalEuler,
     }
-    # for name, fem in methods.items():
-    #     plot_sol_over_time(fem, name)
+    for name, fem in methods.items():
+        plot_sol_over_time(fem, name)
 
-    # for name, fem in methods.items():
-    #     plot_error_mesh_analysis(fem)
-    # plt.legend(methods.keys())
-    # plt.savefig(os.path.join(PATH, "mesh-analysis-total.eps"), format="eps")
-    # plt.show()
+    for name, fem in methods.items():
+        plot_error_mesh_analysis(fem)
+    plt.legend(methods.keys())
+    plt.savefig(os.path.join(PATH, "mesh-analysis-total.eps"), format="eps")
+    plt.show()
 
-    # for name, fem in methods.items():
-    #     plot_error_mesh_analysis(fem, t_steps=20)
-    # plt.legend(methods.keys())
-    # plt.savefig(os.path.join(PATH, "mesh-analysis-total-converge.eps"), format="eps")
-    # plt.show()
+    for name, fem in methods.items():
+        plot_error_mesh_analysis(fem, t_steps=20)
+    plt.legend(methods.keys())
+    plt.savefig(os.path.join(PATH, "mesh-analysis-total-converge.eps"), format="eps")
+    plt.show()
 
-    # for name, fem in methods.items():
-    #     plot_error_time_analysis(fem)
-    # plt.legend(methods.keys())
-    # plt.savefig(os.path.join(PATH, "step-analysis-total.eps"), format="eps")
-    # plt.show()
+    for name, fem in methods.items():
+        plot_error_time_analysis(fem)
+    plt.legend(methods.keys())
+    plt.savefig(os.path.join(PATH, "step-analysis-total.eps"), format="eps")
+    plt.show()
 
     plot_error_both_analysis(TrapezoidalEuler)
     plt.savefig(os.path.join(PATH, "both-mesh-step.eps"), format="eps")
