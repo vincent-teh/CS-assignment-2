@@ -135,7 +135,7 @@ class ImplicitEuler(FEM):
         t_steps: int = 10,
         method: str | None = None,
     ):
-        u = np.sin(self.x[1:-1])
+        u = u0
         sol = np.zeros([len(u), t_steps])
         h = t_start + (t_final - t_start) / t_steps
         for index in range(t_steps):
@@ -155,11 +155,12 @@ class TrapezoidalEuler(FEM):
         t_steps: int = 10,
         method: str | None = None,
     ):
-        u = np.sin(self.x[1:-1])
+        u = u0
         sol = np.zeros([len(u), t_steps])
         h = t_start + (t_final - t_start) / t_steps
+        h = h / 2
         for index in range(t_steps):
-            u = np.linalg.solve((self.M + h / 2 * self.S), (self.M - h / 2 * self.S) @ u)
+            u = np.linalg.solve((self.M + h * self.S), (self.M - h * self.S) @ u)
             sol[:, index] = u
         self.sol = sol
 

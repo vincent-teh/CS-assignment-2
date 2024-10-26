@@ -114,6 +114,11 @@
   \end{center}
 \end{titlepage}
 
+\tableofcontents
+\newpage
+
+\textbf{All the codes to the solution written can be found from this GitHub:} \\
+\url{https://github.com/vincent-teh/CS-assignment-2.git}
 
 \section{Workout 1}%
 \label{sec:Workout 1}
@@ -192,6 +197,8 @@ The probability of $0 \le A1(T),\ A2(T) < \pi \approx 0$.
 
 The probability of $-\pi/4 \le A1(T),\ A2(T) < 0 \approx 76.98\%,\ 75.46\%$ respectively. 
 
+Since the given ODE system is a non-stiff problem, RK45 as an explicit method was chosen due to RK45's computational efficiency.
+
 
 \section{Workout 2}%
 \label{sec:Workout 2}
@@ -234,6 +241,89 @@ In other words, $u_i = f(a + ih)$.
 
 \subsection{Proved of M is a +ve definite matrix}%
 \label{sub:Proved of M is a +ve definite matrix}
+The Sylvester's criteria states that any nxn Hermitian matrix is positive definite if and only if all of its upper corner matrix has positive determinant. Given that the mass matrix is a $n \times n$ tridiagonal matrix of the collection of $[[2, 1], [1, 2]]$ matrix:
+\begin{align}
+  \det(M_2) &= \det \begin{bmatrix}
+    2 & 1 \\
+    1 & 2
+  \end{bmatrix} \\
+   &= 4 \\
+    \det(M_3) &= \det \begin{bmatrix}
+      2 & 1 \\
+      1 & 4 & 1\\
+        & 1 & 2
+    \end{bmatrix} \\
+  &= 2 \det \begin{bmatrix}
+    4 & 1 \\
+    1 & 2
+  \end{bmatrix} - \det \begin{vmatrix}
+    1 & 1 \\ 0 & 2
+  \end{vmatrix} \\
+  &= 14 - 1 = 13 \\
+  \det(M_4) &= \begin{vmatrix}
+    2 & 1 \\ 1 & 4 & 1 \\
+      & 1 & 4 & 1 \\ & & 1 & 2
+  \end{vmatrix} \\
+  &=  2 \begin{vmatrix}
+    4 & 1 \\ 1 & 4 & 1 \\ & 1 & 2
+  \end{vmatrix} - \begin{vmatrix}
+    1 & 1 \\ & 4 & 1 \\ & 1 & 2
+  \end{vmatrix} \\
+  &= 7 \begin{vmatrix}
+    4 & 1 \\ 1 & 2
+  \end{vmatrix} - \begin{vmatrix}
+    1 & 1 \\ 0 & 2
+  \end{vmatrix} + \begin{vmatrix}
+    0 & 1 \\ 0 & 2
+  \end{vmatrix} \\
+  &= 47 \\
+\end{align}
+\begin{align}
+  \det (M_5) &= \begin{vmatrix}
+      2 & 1 \\
+      1 & 4 & 1\\
+        & 1 & 4 & 1 \\
+        & & 1 & 4 & 1 \\
+        & & & 1 & 2
+    \end{vmatrix} \\
+  &= 2 \begin{vmatrix}
+    4 & 1 \\ 1 & 4 & 1 \\
+      & 1 & 4 & 1 \\ & & 1 & 2
+  \end{vmatrix} - \begin{vmatrix}
+    1 & 1 \\
+      & 4 & 1 \\
+      & 1 & 4 & 1 \\
+      & & 1 & 2
+  \end{vmatrix} \\
+  &= 2 \cdot \left( 4 \begin{vmatrix}
+    4 & 1 \\ 1 & 4 & 1 \\ & 1 & 2
+  \end{vmatrix} - \begin{vmatrix}
+    1 & 1 \\ & 4 & 1 \\ & 1 & 2
+  \end{vmatrix} \right) - \begin{vmatrix}
+    4 & 1 \\ 1 & 4 & 1 \\ & 1 & 2
+  \end{vmatrix} + \begin{vmatrix}
+    0 & 1 & \\ 0 & 4 & 1 \\ 0 & 1 & 2
+  \end{vmatrix} \\
+  &= 2 \left( 
+    4 \cdot 3 \begin{vmatrix}
+      4 & 1 \\ 1 & 2
+    \end{vmatrix} - \begin{vmatrix}
+      1 & 1 \\ 0 & 2
+    \end{vmatrix}
+    \right) - 4 \begin{vmatrix}
+      4 & 1 \\ 1 & 2
+    \end{vmatrix} + \begin{vmatrix}
+      1 & 1 \\ 0 & 2
+    \end{vmatrix} \\
+  &= 20 \begin{vmatrix}
+    4 & 1 \\ 1 & 2
+  \end{vmatrix} - \begin{vmatrix}
+    1 & 1 \\ 0 & 2
+  \end{vmatrix} \\
+  &= c * 7 - 2
+\end{align}
+Since $c$ always positive as the element of the matrix M are all positive and the value of the second diagonal is always smaller than the center diagonal element, the determinant of $M_n$ is also always positive, the tridiagonal matrix follows the Sylvester's criteria and hence is a positive definite matrix.
+
 
 
 \subsection{Solving using the std ODE solver}%
@@ -348,53 +438,42 @@ Implicit method on the other hand has unconditional stability criteria, implying
 \label{sub:Implementation of the FEM in Python.}
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{figures/Explicit_Euler.eps}
-  \caption{FEM Solution using Explicit Euler method.}
-  \label{fig:figures-Explicit_Euler-eps}
+  \includegraphics[width=0.8\textwidth]{figures/mesh-analysis-total.eps}
+  \caption{Effect of changing the mesh size on the accuracy across the 3 methods.}
+  \label{fig:figures-mesh-analysis-total-eps}
 \end{figure}
+
+Figure \ref{fig:figures-mesh-analysis-total-eps} shows as the mesh size increases, the accuracy of the Explicit Euler method improves while the Implicit Euler and Trapezoidal methods have no significant changes in their accuracy. This is because the Explicit Euler stability criteria is bounded by both the mesh size and the time step size. The larger the size of the mesh, the smaller the time step required. By increasing the size of the k to 20, figure \ref{fig:figures-mesh-analysis-total-eps} shows only the largest mesh reaches convergence despite the step size has doubled. This indicates the need of using large number of steps to achieve convergence, which can be computational expensive as the number of mesh and dimension increases.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{figures/Implicit_Euler.eps}
-  \caption{FEM Solution using Implicit Euler method.}
-  \label{fig:figures-Implicit_Euler-eps}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{figures/Trapezoidal.eps}
-  \caption{FEM Solution using Trapezoidal method.}
-  \label{fig:figures-Trapezoidal-eps}
-\end{figure}
-
-Figure \ref{fig:figures-Explicit_Euler-eps}, \ref{fig:figures-Implicit_Euler-eps} and \ref{fig:figures-Trapezoidal-eps} shows the solution using the Explicit, Implicit and Trapezoidal method respectively with time step $k$ set to 0.1 and mesh size $h$ set to 7. All of the solution converge in this case with no significance performance overhead in the methods due to all methods have the same time complexity per updates and perform fixed size of update ($(t_F - t_0) / k$).
-
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{figures/Explicit_Euler-steps-error.eps}
-  \caption{Step count error analysis with Explicit Euler method.}
-  \label{fig:figures-Explicit_Euler-steps-error-eps}
+  \includegraphics[width=0.8\textwidth]{figures/mesh-analysis-total-converge.eps}
+  \caption{Explicit Euler method converge only for the largest mesh size for k=20.}
+  \label{fig:figures-mesh-analysis-total-converge-eps}
 \end{figure}
 
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{figures/Implicit_Euler-steps-error.eps}
-  \caption{Step count error analysis with Implicit Euler method.}
-  \label{fig:figures-Implicit_Euler-steps-error-eps}
+  \includegraphics[width=0.8\textwidth]{figures/step-analysis-total.eps}
+  \caption{Effect of changing the step size on the error across the 3 methods.}
+  \label{fig:figures-step-analysis-total-eps}
 \end{figure}
+Figure \ref{fig:figures-step-analysis-total-eps} shows again only the Explicit Euler's method did not reach convergence at all of the choice of the step sizes. Also noticed that even the implicit methods did not show improvement in accuracy with the constant time steps despite increasing the number of steps taken.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{figures/Trapezoidal-steps-error.eps}
-  \caption{Step count error analysis with Trapezoidal method.}
-  \label{fig:figures-Trapezoidal-steps-error-eps}
+  \includegraphics[width=0.8\textwidth]{figures/both-mesh-step.eps}
+  \caption{Increase both the Mesh and Step on Trapezoidal Method.}
+  \label{fig:figures-both-mesh-step-eps}
 \end{figure}
+Interestingly, increasing both the number of meshes and steps by applying meshes=[5, 6, 7, 8, 100] and steps=[5, 10, 20, 40, 100000] did not yield any improvement as shown in figure \ref{fig:figures-both-mesh-step-eps}. Thus, it is likely that the computation limit has been reached. One quick way to improve the performance is to use a higher accuracy data type, including a larger floating point to compensate higher accuracy.
 
-Figure \ref{fig:figures-Explicit_Euler-steps-error-eps}, \ref{fig:figures-Implicit_Euler-steps-error-eps} and \ref{fig:figures-Trapezoidal-steps-error-eps} shows the effect of increasing the number of steps in the error of the solution measured in energy norm.
 
-
+\newpage
+\section{Appendix: GitHub Link}%
+\label{sec:Appendix: GitHub Link}
+\url{https://github.com/vincent-teh/CS-assignment-2.git}
 
 \end{document}
 
