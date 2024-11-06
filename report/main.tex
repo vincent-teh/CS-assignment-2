@@ -413,47 +413,66 @@ Implicit method on the other hand has unconditional stability criteria, implying
 
 
 
-
-
 \subsection{Implementation of the FEM in Python.}%
 \label{sub:Implementation of the FEM in Python.}
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.8\textwidth]{figures/mesh-analysis-total.eps}
-  \caption{Effect of changing the mesh size on the accuracy across the 3 methods.}
-  \label{fig:figures-mesh-analysis-total-eps}
+  \includegraphics[width=0.8\textwidth]{figures/mesh-analysis-Explicit_Euler.eps}
+  \caption{Effect of decreasing the mesh sizes of the Explicit Euler method.}
+  \label{fig:figures-mesh-analysis-Explicit_Euler-eps}
 \end{figure}
-
-Figure \ref{fig:figures-mesh-analysis-total-eps} shows as the mesh size increases, the accuracy 
-of the Explicit Euler method improves while the Implicit Euler and Trapezoidal methods have no 
-significant changes in their accuracy. This is because the Explicit Euler stability criteria are
-bounded by both the mesh size and the time step size. The larger the size of the mesh, the smaller the time step required. By increasing the size of the k to 20, figure \ref{fig:figures-mesh-analysis-total-eps} shows only the largest mesh reaches convergence despite the step size has doubled. This indicates the need of using  the large number of steps to achieve convergence, which
-can be computational expensive as the number of mesh and dimension increases.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.8\textwidth]{figures/mesh-analysis-total-converge.eps}
-  \caption{Explicit Euler method converge only for the largest mesh size for k=20.}
-  \label{fig:figures-mesh-analysis-total-converge-eps}
+  \includegraphics[width=0.8\textwidth]{figures/mesh-analysis-Implicit_Euler.eps}
+  \caption{Effect of decreasing the mesh sizes of the Implicit Euler method.}
+  \label{fig:figures-mesh-analysis-Implicit_Euler-eps}
 \end{figure}
-
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.8\textwidth]{figures/step-analysis-total.eps}
-  \caption{Effect of changing the step size on the error across the 3 methods.}
-  \label{fig:figures-step-analysis-total-eps}
+  \includegraphics[width=0.8\textwidth]{figures/mesh-analysis-Trapezoidal.eps}
+  \caption{Effect of decreasing the mesh sizes of the Trapezoidal method.}
+  \label{fig:figures-mesh-analysis-Trapezoidal-eps}
 \end{figure}
-Figure \ref{fig:figures-step-analysis-total-eps} shows again only the Explicit Euler's method did not reach convergence at all the choice of the step sizes. Also noticed that even the implicit methods did not show improvement in accuracy with the constant time steps despite increasing the number of steps taken.
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\textwidth]{figures/both-mesh-step.eps}
-  \caption{Increase both the Mesh and Step on Trapezoidal Method.}
-  \label{fig:figures-both-mesh-step-eps}
-\end{figure}
-Interestingly, increasing both the number of meshes and steps by applying meshes=[5, 6, 7, 8, 100] and steps=[5, 10, 20, 40, 100000] did not yield any improvement as shown in figure \ref{fig:figures-both-mesh-step-eps}. Thus, it is likely that the computation limit has been reached. One quick way to improve the performance is to use a higher accuracy data type, including a larger floating point to compensate higher accuracy.
-
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=0.8\textwidth]{figures/mesh-analysis-total.eps}
+%   \caption{Effect of changing the mesh size on the accuracy across the 3 methods.}
+%   \label{fig:figures-mesh-analysis-total-eps}
+% \end{figure}
+%
+% Figure \ref{fig:figures-mesh-analysis-total-eps} shows as the mesh size increases, the accuracy 
+% of the Explicit Euler method improves while the Implicit Euler and Trapezoidal methods have no 
+% significant changes in their accuracy. This is because the Explicit Euler stability criteria are
+% bounded by both the mesh size and the time step size. The larger the size of the mesh, the smaller the time step required. By increasing the size of the k to 20, figure \ref{fig:figures-mesh-analysis-total-eps} shows only the largest mesh reaches convergence despite the step size has doubled. This indicates the need of using  the large number of steps to achieve convergence, which
+% can be computational expensive as the number of mesh and dimension increases.
+%
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=0.8\textwidth]{figures/mesh-analysis-total-converge.eps}
+%   \caption{Explicit Euler method converge only for the largest mesh size for k=20.}
+%   \label{fig:figures-mesh-analysis-total-converge-eps}
+% \end{figure}
+%
+%
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=0.8\textwidth]{figures/step-analysis-total.eps}
+%   \caption{Effect of changing the step size on the error across the 3 methods.}
+%   \label{fig:figures-step-analysis-total-eps}
+% \end{figure}
+% Figure \ref{fig:figures-step-analysis-total-eps} shows again only the Explicit Euler's method did not reach convergence at all the choice of the step sizes. Also noticed that even the implicit methods did not show improvement in accuracy with the constant time steps despite increasing the number of steps taken.
+%
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=0.8\textwidth]{figures/both-mesh-step.eps}
+%   \caption{Increase both the Mesh and Step on Trapezoidal Method.}
+%   \label{fig:figures-both-mesh-step-eps}
+% \end{figure}
+% Interestingly, increasing both the number of meshes and steps by applying meshes=[5, 6, 7, 8, 100] and steps=[5, 10, 20, 40, 100000] did not yield any improvement as shown in figure \ref{fig:figures-both-mesh-step-eps}. Thus, it is likely that the computation limit has been reached. One quick way to improve the performance is to use a higher accuracy data type, including a larger floating point to compensate higher accuracy.
+%
 
 \newpage
 \section{Appendix: GitHub Link}%

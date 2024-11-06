@@ -94,7 +94,6 @@ def calc_loop_error(
         x = np.linspace(x_start, x_end, mesh_size)
         u0 = np.sin(x)
         fem = FEM_(x)
-        # e_exact = scipy.integrate.trapezoid(exact_fn_prime(1, x)**2, x)
         e_exact = np.exp(-1) * np.sin(x)
         sol = fem.solve(u0[1:-1], t_steps=step_size)
         e = fem.e - e_exact[1:-1]
@@ -120,17 +119,21 @@ def plot_error_mesh_analysis(FEM_: str, t_steps: int = 10):
     _ = plt.xlabel("Size of the mesh in log scale.")
     _ = plt.ylabel("Measured error in log scale.")
     _ = plt.title(f"Error vs Mesh Size Curve with k={t_steps} for {FEM_}")
-    plt.savefig(os.path.join(PATH, f"mesh-analysis-{FEM_}.eps"), format="eps")
+    if os.path.exists(PATH):
+        plt.savefig(os.path.join(PATH, f"mesh-analysis-{FEM_}.eps"), format="eps")
     plt.show()
 
 
 def plot_error_time_analysis(FEM_: str):
     x_start = 0
     x_end = np.pi
-    mesh_size = 25
+    mesh_size = 50
 
     print(f"===============Error Analysis with Mesh Size {mesh_size}===============")
-    step_sizes = [50, 100, 200, 500, 1000, 2000, 5000, 10000, 100000]
+    if FEM_ == "Explicit_Euler":
+        step_sizes = [1000, 2000, 5000, 8000, 10000, 100000]
+    else:
+        step_sizes = [50, 100, 200, 300, 500, 800, 1000]
     errors = calc_loop_error(
         METHODS[FEM_], x_start, x_end, mesh_size, step_sizes
     )
@@ -140,43 +143,17 @@ def plot_error_time_analysis(FEM_: str):
     plt.xlabel("Number of steps in log scale.")
     plt.ylabel("Measured error in log scale.")
     plt.title(f"Error vs Time Steps Curve with h={mesh_size} for {FEM_}")
-    plt.savefig(os.path.join(PATH, f"time-analysis-{FEM_}.eps"), format="eps")
+    if os.path.exists(PATH):
+        plt.savefig(os.path.join(PATH, f"time-analysis-{FEM_}.eps"), format="eps")
     plt.show()
 
 
-def plot_error_both_analysis(FEM_: Type[FEM]):
-    x_start = 0
-    x_end = np.pi
-    t_final = 1
-    mesh_size = 7
-
-    x = np.linspace(x_start, x_end, 1000)
-    u0 = np.sin(x)
-
-    exact_fn_prime = lambda t, x: np.exp(-t) * np.cos(x)
-    exact_sol_norm = scipy.integrate.trapezoid(exact_fn_prime(t_final, x) ** 2, x)
-    print(f"Exact solution norm: {exact_sol_norm: .4f}")
-
-    print(f"===============Error Improvement===============")
-    mesh_sizes = [5, 6, 7, 8, 100]
-    step_sizes = [5, 10, 20, 40, 100000]
-    errors = calc_loop_error(
-        FEM_, x_start, x_end, mesh_sizes, step_sizes
-    )
-    plt.plot(step_sizes, errors, marker="o")
-    plt.xscale("log")
-    plt.yscale("log")
-    plt.xlabel("Number of steps in log scale.")
-    plt.ylabel("Measured error in log scale.")
-    plt.title(f"Increase both no of meshes and steps.")
-
-
 def main() -> None:
-    # for name, fem in METHODS.items():
-    #     plot_sol_over_time(fem, name)
+    for name, fem in METHODS.items():
+        plot_sol_over_time(fem, name)
 
-    # for name in METHODS.keys():
-    #     plot_error_mesh_analysis(name, t_steps=10000)
+    for name in METHODS.keys():
+        plot_error_mesh_analysis(name, t_steps=10000)
 
     for name in METHODS.keys():
         plot_error_time_analysis(name)
