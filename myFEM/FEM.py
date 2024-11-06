@@ -45,7 +45,14 @@ class FEM:
     def sol_norm(self):
         if self.sol is None:
             return 0
-        return self.sol[:, -1].T @ -self.S @ self.sol[:, -1]
+        return np.sqrt(np.abs(self.sol[:, -1].T @ -self.S @ self.sol[:, -1]))
+
+
+    @property
+    def e(self):
+        if self.sol is None:
+            return 0
+        return self.sol[:, -1]
 
 
     @staticmethod

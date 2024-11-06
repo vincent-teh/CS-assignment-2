@@ -9,6 +9,11 @@ from myFEM import FEM, ExplicitEuler, ImplicitEuler, TrapezoidalEuler
 
 
 PATH = os.path.join("report", "figures")
+METHODS = {
+        "Explicit_Euler": ExplicitEuler,
+        "Implicit_Euler": ImplicitEuler,
+        "Trapezoidal": TrapezoidalEuler,
+    }
 
 
 def plot_sol_over_time(FEM_: object, fig_name: str | None = None):
@@ -64,15 +69,14 @@ def plot_sol_over_time(FEM_: object, fig_name: str | None = None):
 
 def calc_loop_error(
     FEM_: Type[FEM],
-    x_start,
-    x_end,
-    exact_sol_norm,
+    x_start: int | float,
+    x_end: int | float,
     mesh_sizes: int | list[int],
     step_sizes: int | list[int],
 ) -> list[float]:
     if not isinstance(mesh_sizes, list):
         if not isinstance(step_sizes, list):
-            x = np.linspace(x_start, x_end, mesh_size)
+            x = np.linspace(x_start, x_end, mesh_sizes)
             u0 = np.sin(x)
             return FEM_(x).solve(u0[1:-1], t_steps=step_sizes)
         mesh_sizes = [mesh_sizes for _ in range(len(step_sizes))]
@@ -84,70 +88,60 @@ def calc_loop_error(
     else:
         step_sizes = [step_sizes for _ in range(len(mesh_sizes))]
 
-    errors = []
+
+    errors: list[float] = []
     for mesh_size, step_size in zip(mesh_sizes, step_sizes):
         x = np.linspace(x_start, x_end, mesh_size)
         u0 = np.sin(x)
         fem = FEM_(x)
+        # e_exact = scipy.integrate.trapezoid(exact_fn_prime(1, x)**2, x)
+        e_exact = np.exp(-1) * np.sin(x)
         sol = fem.solve(u0[1:-1], t_steps=step_size)
-        errors.append((abs(exact_sol_norm - fem.sol_norm)))
+        e = fem.e - e_exact[1:-1]
+        errors.append(np.sqrt(np.abs(e.T @ -fem.S @ e)))
         print(f"Error: {errors[-1]:.4f}")
 
     return errors
 
 
-def plot_error_mesh_analysis(FEM_: Type[FEM], t_steps: int = 10):
+def plot_error_mesh_analysis(FEM_: str, t_steps: int = 10):
     x_start = 0
     x_end = np.pi
-    t_final = 1
-
-    x = np.linspace(x_start, x_end, 1000)
-    u0 = np.sin(x)
-
-    exact_fn_prime = lambda t, x: np.exp(-t) * np.cos(x)
-    exact_sol_norm = scipy.integrate.trapezoid(exact_fn_prime(t_final, x) ** 2, x)
-    print(f"Exact solution norm: {exact_sol_norm: .4f}")
 
     print(f"===============Error Analysis with Step Count {t_steps}===============")
-    mesh_sizes = [5, 7, 10, 20]
+    mesh_sizes = [5, 7, 10, 20, 40, 80, 100]
     errors = calc_loop_error(
-        FEM_, x_start, x_end, exact_sol_norm, mesh_sizes, step_sizes=t_steps
+        METHODS[FEM_], x_start, x_end, mesh_sizes, step_sizes=t_steps
     )
     mesh_sizes = 1 / np.array(mesh_sizes)
-    # plt.figure(figsize=(10.5, 5))
-    plt.plot(mesh_sizes, errors, marker="o")
-    plt.xscale("log")
-    plt.yscale("log")
-    plt.xlabel("Size of the mesh in log scale.")
-    plt.ylabel("Measured error in log scale.")
-    plt.title(f"Error vs Mesh Size Curve with k={t_steps}")
+    _ = plt.plot(mesh_sizes, errors, marker="o")
+    _ = plt.xscale("log")
+    _ = plt.yscale("log")
+    _ = plt.xlabel("Size of the mesh in log scale.")
+    _ = plt.ylabel("Measured error in log scale.")
+    _ = plt.title(f"Error vs Mesh Size Curve with k={t_steps} for {FEM_}")
+    plt.savefig(os.path.join(PATH, f"mesh-analysis-{FEM_}.eps"), format="eps")
+    plt.show()
 
 
-def plot_error_time_analysis(FEM_: Type[FEM]):
+def plot_error_time_analysis(FEM_: str):
     x_start = 0
     x_end = np.pi
-    t_steps = 5
-    t_final = 1
-    mesh_size = 7
+    mesh_size = 25
 
-    x = np.linspace(x_start, x_end, 1000)
-    u0 = np.sin(x)
-
-    exact_fn_prime = lambda t, x: np.exp(-t) * np.cos(x)
-    exact_sol_norm = scipy.integrate.trapezoid(exact_fn_prime(t_final, x) ** 2, x)
-    print(f"Exact solution norm: {exact_sol_norm: .4f}")
-
-    print(f"===============Error Analysis with Step Count {t_steps}===============")
-    step_sizes = [5, 10, 20, 50, 100]
+    print(f"===============Error Analysis with Mesh Size {mesh_size}===============")
+    step_sizes = [50, 100, 200, 500, 1000, 2000, 5000, 10000, 100000]
     errors = calc_loop_error(
-        FEM_, x_start, x_end, exact_sol_norm, mesh_size, step_sizes
+        METHODS[FEM_], x_start, x_end, mesh_size, step_sizes
     )
     plt.plot(step_sizes, errors, marker="o")
     plt.xscale("log")
     plt.yscale("log")
     plt.xlabel("Number of steps in log scale.")
     plt.ylabel("Measured error in log scale.")
-    plt.title(f"Error vs Time Steps Curve with h={mesh_size}")
+    plt.title(f"Error vs Time Steps Curve with h={mesh_size} for {FEM_}")
+    plt.savefig(os.path.join(PATH, f"time-analysis-{FEM_}.eps"), format="eps")
+    plt.show()
 
 
 def plot_error_both_analysis(FEM_: Type[FEM]):
@@ -167,7 +161,7 @@ def plot_error_both_analysis(FEM_: Type[FEM]):
     mesh_sizes = [5, 6, 7, 8, 100]
     step_sizes = [5, 10, 20, 40, 100000]
     errors = calc_loop_error(
-        FEM_, x_start, x_end, exact_sol_norm, mesh_sizes, step_sizes
+        FEM_, x_start, x_end, mesh_sizes, step_sizes
     )
     plt.plot(step_sizes, errors, marker="o")
     plt.xscale("log")
@@ -178,35 +172,15 @@ def plot_error_both_analysis(FEM_: Type[FEM]):
 
 
 def main() -> None:
-    methods = {
-        "Explicit_Euler": ExplicitEuler,
-        "Implicit_Euler": ImplicitEuler,
-        "Trapezoidal": TrapezoidalEuler,
-    }
-    for name, fem in methods.items():
-        plot_sol_over_time(fem, name)
+    # for name, fem in METHODS.items():
+    #     plot_sol_over_time(fem, name)
 
-    for name, fem in methods.items():
-        plot_error_mesh_analysis(fem)
-    plt.legend(methods.keys())
-    plt.savefig(os.path.join(PATH, "mesh-analysis-total.eps"), format="eps")
-    plt.show()
+    # for name in METHODS.keys():
+    #     plot_error_mesh_analysis(name, t_steps=10000)
 
-    for name, fem in methods.items():
-        plot_error_mesh_analysis(fem, t_steps=20)
-    plt.legend(methods.keys())
-    plt.savefig(os.path.join(PATH, "mesh-analysis-total-converge.eps"), format="eps")
-    plt.show()
+    for name in METHODS.keys():
+        plot_error_time_analysis(name)
 
-    for name, fem in methods.items():
-        plot_error_time_analysis(fem)
-    plt.legend(methods.keys())
-    plt.savefig(os.path.join(PATH, "step-analysis-total.eps"), format="eps")
-    plt.show()
-
-    plot_error_both_analysis(TrapezoidalEuler)
-    plt.savefig(os.path.join(PATH, "both-mesh-step.eps"), format="eps")
-    plt.show()
 
 if __name__ == "__main__":
     main()

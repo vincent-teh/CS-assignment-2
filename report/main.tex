@@ -361,15 +361,51 @@ In Python, use \texttt{numpy.linalg.solve} to create a system of linear equation
 
 \subsection{Stability Analysis of the ODE methods on the FEM of the Heat Equation.}%
 \label{sub:Stability Analysis of the ODE methods on the FEM of the Heat Equation.}
-The Courant–Friedrichs–Lewy condition defines the heat equation is stable if:
+% The Courant–Friedrichs–Lewy condition defines the heat equation is stable if:
+% \begin{align}
+%   \max |u(t_{k+1})| \le \max |u(t_k)|
+% \end{align}
+% To satisfy the CFL condition using Explicit Euler's method,
+% \begin{align}
+%   k \le \frac{h^2}{2}
+% \end{align}
+% Where k is the time step and h is the size of the interval of the mesh.
+Given the derived Explicit Euler equation
 \begin{align}
-  \max |u(t_{k+1})| \le \max |u(t_k)|
+  u(t_{k+1}) &= u(t_k) + kM^{-1}S u(t_k) \\
+  \text{Let } A &= M^{-1}S
 \end{align}
-To satisfy the CFL condition using Explicit Euler's method,
+The matrix A can be rewritten as:
 \begin{align}
-  k \le \frac{h^2}{2}
+A = \frac{1}{h^2}\begin{bmatrix}
+  -2 & 1 \\
+  1 & -2 & 1 \\
+   & 1 & 2 & -1 \\
+   & & \ddots & \ddots & \ddots \\
+   & & & 1 & -2 & 1 \\
+   & & & & 1 & -2
+\end{bmatrix}
 \end{align}
-Where k is the time step and h is the size of the interval of the mesh.
+The system is stable if and only if 
+\begin{align}
+|1 + k \lambda| \le 1
+\end{align}
+Where $\lambda$ is the maximum eigenvalues of A and the Eigenvalues of A can be computed as:
+\begin{align}
+  \text{Eigenvalue of }A = \frac{-4}{h^2}\sin^2( \frac{\pi}{2} l h) \\
+\end{align}
+We can obtained the absolute stability region with the following equation:
+\begin{align}
+\frac{2}{-\lambda_m} = \frac{h^2}{2 \sin^2 \left( \frac{\pi}{2} m h \right)}
+\end{align}
+since the denominator $-1 \le \sin( \frac{\pi}{2}m h) \le 1$, the maximum eigenvalue of A is obtained simply by equating the denominator with 1. Then,
+\begin{align}
+|1 + k\lambda| \le 1 \\
+|1 + k \frac{4}{h^2}| \le 1 \\
+k \frac{4}{h^2} \le 2 \\
+k \le \frac{h^2}{2}
+\end{align}
+
 
 Implicit method on the other hand has unconditional stability criteria, implying that any choice of h will result in stable system.
 
