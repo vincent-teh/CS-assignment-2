@@ -1,5 +1,3 @@
-from logging import warning
-from typing import Type
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -127,22 +125,23 @@ def plot_error_mesh_analysis(FEM_: str, t_steps: int = 10):
 def plot_error_time_analysis(FEM_: str):
     x_start = 0
     x_end = np.pi
-    mesh_size = 50
+    mesh_size = 30
 
     print(f"===============Error Analysis with Mesh Size {mesh_size}===============")
     if FEM_ == "Explicit_Euler":
-        step_sizes = [1000, 2000, 5000, 8000, 10000, 100000]
+        step_sizes = [1000, 1300, 1500, 2000, 5000, 8000, 10000, 100000]
     else:
-        step_sizes = [50, 100, 200, 300, 500, 800, 1000]
+        step_sizes = [10 * i for i in range(1, 30, 2)]
     errors = calc_loop_error(
         METHODS[FEM_], x_start, x_end, mesh_size, step_sizes
     )
+    plt.figure(0, (10, 6))
     plt.plot(step_sizes, errors, marker="o")
     plt.xscale("log")
     plt.yscale("log")
     plt.xlabel("Number of steps in log scale.")
     plt.ylabel("Measured error in log scale.")
-    plt.title(f"Error vs Time Steps Curve with h={mesh_size} for {FEM_}")
+    plt.title(f"Error vs Time Steps Curve with N={mesh_size} for {FEM_}")
     if os.path.exists(PATH):
         plt.savefig(os.path.join(PATH, f"time-analysis-{FEM_}.eps"), format="eps")
     plt.show()

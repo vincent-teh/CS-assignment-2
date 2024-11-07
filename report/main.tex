@@ -334,7 +334,7 @@ Explicit Euler's method:
   u(t_{k+1}) &= u(t_k) + h \frac{\partial u(t_k)}{\partial t} \\
   u(t_{k+1}) &= u(t_k) + h M^{-1} S u(t_k) \\
   M u(t_{k+1}) &= M u(t_k) + h S u(t_k) \\
-  M u(t_{k+1}) &= (M + hS) u(t_k)
+  M u(t_{k+1}) &= (M + hS) u(t_k) \label{eqn:w2:derived-explicit-euler}
 \end{align}
 
 Implicit Euler Formula:
@@ -417,6 +417,34 @@ Implicit method on the other hand has unconditional stability criteria, implying
 \label{sub:Implementation of the FEM in Python.}
 \begin{figure}[H]
   \centering
+  \includegraphics[width=0.8\textwidth]{figures/Explicit_Euler.eps}
+  \caption{Explicit Euler method.}
+  \label{fig:figures-Explicit_Euler-eps}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figures/Implicit_Euler.eps}
+  \caption{Implicit Euler method.}
+  \label{fig:figures-Implicit_Euler-eps}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figures/Trapezoidal.eps}
+  \caption{Trapezoidal Method.}
+  \label{fig:figures-Trapezoidal-eps}
+\end{figure}
+Figure \ref{fig:figures-Explicit_Euler-eps}, \ref{fig:figures-Implicit_Euler-eps} and
+\ref{fig:figures-Trapezoidal-eps} show that all three methods able to converge to a reasonable
+solution. The $N$ of the mesh is set to 7 while the steps taken, $k$ is set to 100. The code was
+created by first generate the $u_0 = sin(x)$ vector. Then, solve the $Ax = b$ equation derived 
+in \ref{eqn:w2:derived-explicit-euler}, \ref{eqn:w2:derive-implicit-euler} and 
+\ref{eqn:w2:derived-trapezoidal-method} iteratively for $k$ steps.
+
+
+\begin{figure}[H]
+  \centering
   \includegraphics[width=0.8\textwidth]{figures/mesh-analysis-Explicit_Euler.eps}
   \caption{Effect of decreasing the mesh sizes of the Explicit Euler method.}
   \label{fig:figures-mesh-analysis-Explicit_Euler-eps}
@@ -435,6 +463,53 @@ Implicit method on the other hand has unconditional stability criteria, implying
   \caption{Effect of decreasing the mesh sizes of the Trapezoidal method.}
   \label{fig:figures-mesh-analysis-Trapezoidal-eps}
 \end{figure}
+The choice of $k$ for the figures plotted are 10000 and the sample size taken are 
+$[5, 7, 10, 20, 40, 80, 100]$. Based on figures \ref{fig:figures-mesh-analysis-Explicit_Euler-eps}, \ref{fig:figures-mesh-analysis-Implicit_Euler-eps} and \ref{fig:figures-mesh-analysis-Trapezoidal-eps},
+as the size of the mesh decreases, the error of the solution decreases as well. This is because
+the error rate of the FEM, $||u - u_h|| \le Ch^p$ where $C$ is a constant. As $h$ becomes 
+smaller, the approximation converge to the actual solution. Here, $k=10000$ was chosen to 
+eliminate the possibility of the Explicit Euler Method becomes unstable numerically. On the 
+other hand, the choice of the $k$ does not affect much on the numerical performance of the 
+Implicit methods, but rather have impact on the runtime performance, which in this case is 
+negligible.
+
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figures/time-analysis-Explicit_Euler.eps}
+  \caption{Effect of changing the step size on the Explicit Euler method.}
+  \label{fig:figures-time-analysis-Explicit_Euler-eps}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figures/time-analysis-Implicit_Euler.eps}
+  \caption{Effect of changing the step size on the Implicit Euler method.}
+  \label{fig:figures-time-analysis-Implicit_Euler-eps}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figures/time-analysis-Trapezoidal.eps}
+  \caption{Effect of changing the step size on the Trapezoidal method.}
+  \label{fig:figures-time-analysis-Trapezoidal-eps}
+\end{figure}
+
+Figure \ref{fig:figures-time-analysis-Explicit_Euler-eps}, \ref{fig:figures-time-analysis-Implicit_Euler-eps} and \ref{fig:figures-time-analysis-Trapezoidal-eps}
+show the ability of the methods to converge. The number of steps taken by the Explicit Euler
+method is $[1000, 1300, 1500, 2000, 5000, 8000, 10000, 100000]$ while the step size of the
+Implicit Method range from 10 to 3000. As the number of step size increases, the error of the
+method decreases. In particular, the trapezoidal method converge fastest outshone the other two
+algorithm. This is because the trapezoidal method utilized both the information of the current
+step and the predicted next step, resulting in a more efficient updating steps. On the other hand,
+the Explicit Euler method requires significantly large step size as the method demand strict
+convergence criteria of $k \ge 1800$ for $N = 30$.
+
+
+
+
+
 
 % \begin{figure}[H]
 %   \centering
