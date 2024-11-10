@@ -361,49 +361,48 @@ In Python, use \texttt{numpy.linalg.solve} to create a system of linear equation
 
 \subsection{Stability Analysis of the ODE methods on the FEM of the Heat Equation.}%
 \label{sub:Stability Analysis of the ODE methods on the FEM of the Heat Equation.}
-% The Courant–Friedrichs–Lewy condition defines the heat equation is stable if:
-% \begin{align}
-%   \max |u(t_{k+1})| \le \max |u(t_k)|
-% \end{align}
-% To satisfy the CFL condition using Explicit Euler's method,
-% \begin{align}
-%   k \le \frac{h^2}{2}
-% \end{align}
-% Where k is the time step and h is the size of the interval of the mesh.
 Given the derived Explicit Euler equation
 \begin{align}
   u(t_{k+1}) &= u(t_k) + kM^{-1}S u(t_k) \\
   \text{Let } A &= M^{-1}S
 \end{align}
-The matrix A can be rewritten as:
+Assuming we have a homogeneous Dirichlet boundary conditions $u(0, t) = u(1, t) = 0$ with the
+initial condition $u(x,0) = u^0(x)$, the matrix M and S are:
 \begin{align}
-A = \frac{1}{h^2}\begin{bmatrix}
-  -2 & 1 \\
-  1 & -2 & 1 \\
-   & 1 & 2 & -1 \\
-   & & \ddots & \ddots & \ddots \\
-   & & & 1 & -2 & 1 \\
-   & & & & 1 & -2
-\end{bmatrix}
+  M &= \frac{h}{6} \cdot \begin{bmatrix}
+  4 & 1\\ 1 & 4 & 1 \\ & 1 & 4 & 1 \\ & & \ddots & \ddots & \ddots \\ & & & 1 & 4 & 1 \\
+    & & & & 1 & 4
+\end{bmatrix} \\
+    S &= -\frac{1}{h} \cdot \begin{bmatrix}
+  2 & -1\\ -1 & 2 & -1 \\ & -1 & 2 & -1 \\ & & \ddots & \ddots & \ddots \\ & & & -1 & 2 & -1 \\
+    & & & & -1 & 2
+\end{bmatrix} 
 \end{align}
-The system is stable if and only if 
+Since both the $M$ and $S$ matrices are symmetric tridiagonal, there exists a close form solution
+to the eigenvalues of the matrices.
 \begin{align}
-|1 + k \lambda| \le 1
+\lambda_l = a + 2b \cos\left(\frac{l\pi}{n+1}\right), \quad l = 1, 2, \ldots, n 
 \end{align}
-Where $\lambda$ is the maximum eigenvalues of A and the Eigenvalues of A can be computed as:
+Where $a$ is the diagonal value and b is the off-diagonal value of the matrices M and S. The
+values of $a$ and $b$ are $(4, 1)$ and $(2, -1)$ for the M and S matrix respectively. Hence,
+the following close form equation was obtained for the eigenvalues of M and S:
 \begin{align}
-  \text{Eigenvalue of }A = \frac{-4}{h^2}\sin^2( \frac{\pi}{2} l h) \\
+  \lambda_S &= -\frac{1}{h} (2 - 2\cos (l \pi h) )\\
+  &= -\frac{2}{h} (1 - \cos (l \pi h) )\\
+\lambda_M &= \frac{h}{6} (4 + 2 \cos (l \pi h)) \\
+          &= \frac{h}{3} (2 + \cos (l \pi h))
 \end{align}
-We can obtained the absolute stability region with the following equation:
+Then, the eigenvalue of the matrix $M^{-1} S$ will simply be:
 \begin{align}
-\frac{2}{-\lambda_m} = \frac{h^2}{2 \sin^2 \left( \frac{\pi}{2} m h \right)}
+  \lambda_{M^{-1}S} = -\frac{6}{h^2} \cdot \frac{1 - \cos (l \pi h)}{2 + \cos (l \pi h)} 
 \end{align}
-since the denominator $-1 \le \sin( \frac{\pi}{2}m h) \le 1$, the maximum eigenvalue of A is obtained simply by equating the denominator with 1. Then,
+For the Explicit Euler method to be stable, $k$ must be chosen such that it is less than or 
+equal to $2/-\lambda_A$. Thus, we obtained:
 \begin{align}
-|1 + k\lambda| \le 1 \\
-|1 + k \frac{4}{h^2}| \le 1 \\
-k \frac{4}{h^2} \le 2 \\
-k \le \frac{h^2}{2}
+k &\le \lambda_{M^{-1}S} \\
+  &\le \frac{h^2}{6} \cdot \frac{2 + \cos (l \pi h)}{1 - \cos (l \pi h)} \\
+k &\le c \cdot h^2 \\
+\text{Where } c &= \frac{1}{6} \cdot \frac{2 + \cos (l \pi h)}{1 - \cos (l \pi h)}
 \end{align}
 
 
